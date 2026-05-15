@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SkillsHub.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+91966e0da0df9dae9f6e282a67f6c6c519b7062c")]
 [assembly: System.Reflection.AssemblyProductAttribute("SkillsHub.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SkillsHub.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

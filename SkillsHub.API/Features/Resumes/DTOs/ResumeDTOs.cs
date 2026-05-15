@@ -1,11 +1,24 @@
 namespace SkillsHub.API.Features.Resumes.DTOs;
 
+public record LinkedInUploadRequest(string LinkedInUrl);
+public record LinkedInHRUploadRequest(string EmployeeEmail, string LinkedInUrl);
+public record ProfileTextUploadRequest(string ProfileText);
+public record ProfileTextHRUploadRequest(string EmployeeEmail, string ProfileText);
+
 public record ResumeUploadResponse(
     Guid ResumeId,
     string FileName,
     string Status,
     string Message
 );
+
+public class BulkUploadResult
+{
+    public string Email { get; set; } = "";
+    public string FileName { get; set; } = "";
+    public bool Success { get; set; }
+    public string? Error { get; set; }
+}
 
 public record ResumeStatusResponse(
     Guid ResumeId,

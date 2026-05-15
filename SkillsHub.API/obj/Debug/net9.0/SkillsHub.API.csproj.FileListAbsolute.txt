@@ -173,3 +173,4 @@ D:\Hackthon\SkillsHub.API\obj\Debug\net9.0\refint\SkillsHub.API.dll
 D:\Hackthon\SkillsHub.API\obj\Debug\net9.0\SkillsHub.API.pdb
 D:\Hackthon\SkillsHub.API\obj\Debug\net9.0\SkillsHub.API.genruntimeconfig.cache
 D:\Hackthon\SkillsHub.API\obj\Debug\net9.0\ref\SkillsHub.API.dll
+D:\Hackthon\SkillsHub.API\obj\Debug\net9.0\SkillsHub.API.sourcelink.json

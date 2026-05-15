@@ -21,6 +21,26 @@ public class ResumesController(ResumeService resumeService) : ControllerBase
         return Ok(ApiResponse<ResumeUploadResponse>.Ok(response!));
     }
 
+    [HttpPost("upload-text")]
+    public async Task<ActionResult<ApiResponse<ResumeUploadResponse>>> UploadText([FromBody] ProfileTextUploadRequest req)
+    {
+        if (string.IsNullOrWhiteSpace(req.ProfileText))
+            return BadRequest(ApiResponse<ResumeUploadResponse>.Fail("Profile text is required"));
+        var (success, error, response) = await resumeService.UploadFromTextAsync(req.ProfileText, CurrentUserId);
+        if (!success) return BadRequest(ApiResponse<ResumeUploadResponse>.Fail(error));
+        return Ok(ApiResponse<ResumeUploadResponse>.Ok(response!));
+    }
+
+    [HttpPost("upload-linkedin")]
+    public async Task<ActionResult<ApiResponse<ResumeUploadResponse>>> UploadLinkedIn([FromBody] LinkedInUploadRequest req)
+    {
+        if (string.IsNullOrWhiteSpace(req.LinkedInUrl))
+            return BadRequest(ApiResponse<ResumeUploadResponse>.Fail("LinkedIn URL is required"));
+        var (success, error, response) = await resumeService.UploadFromLinkedInAsync(req.LinkedInUrl, CurrentUserId);
+        if (!success) return BadRequest(ApiResponse<ResumeUploadResponse>.Fail(error));
+        return Ok(ApiResponse<ResumeUploadResponse>.Ok(response!));
+    }
+
     [HttpGet("status")]
     public async Task<ActionResult<ApiResponse<ResumeStatusResponse>>> Status()
     {

@@ -1,11 +1,13 @@
 namespace SkillsHub.API.Infrastructure.AI.Models;
 
 public record ParseResumeRequest(string Text, string ProfileId);
+public record LinkedInParseRequest(string Url);
 
 public record ExtractedSkill(string Name, string? Category, int Proficiency, decimal? Years);
 public record ExtractedExperience(string Company, string Title, string? StartDate, string? EndDate, bool IsCurrent, string? Description, List<string> TechStack);
 public record ExtractedProject(string Name, string? Description, List<string> TechStack, string? GitHubUrl);
 public record ExtractedEducation(string Institution, string? Degree, string? FieldOfStudy, int? GraduationYear);
+public record ExtractedCertification(string Name, string? IssuingOrganization, string? CredentialId, string? CredentialUrl, string? IssueDate, string? ExpiryDate);
 
 public record ParseResumeResponse(
     string Summary,
@@ -13,6 +15,7 @@ public record ParseResumeResponse(
     List<ExtractedExperience> Experience,
     List<ExtractedProject> Projects,
     List<ExtractedEducation> Education,
+    List<ExtractedCertification> Certifications,
     decimal TotalYearsExperience
 );
 

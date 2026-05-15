@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     embedding_model: str = "all-MiniLM-L6-v2"
     max_tokens: int = 2000
     debug: bool = False
+    linkedin_email: str = ""
+    linkedin_password: str = ""
 
 
 settings = Settings()

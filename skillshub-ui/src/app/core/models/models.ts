@@ -21,14 +21,16 @@ export interface ExperienceDto {
 }
 export interface ProjectDto { name: string; description?: string; techStack: string[]; gitHubUrl?: string; }
 export interface EducationDto { institution: string; degree?: string; fieldOfStudy?: string; graduationYear?: number; }
+export interface CertificationDto { name: string; issuingOrganization?: string; credentialId?: string; credentialUrl?: string; issueDate?: string; expiryDate?: string; }
 
 export interface ProfileResponse {
   id: string; userId: string; email: string; fullName: string;
   currentTitle?: string; department?: string; yearsOfExperience?: number;
-  summary?: string; linkedInUrl?: string; status: string;
-  createdAt: string; updatedAt: string;
+  summary?: string; linkedInUrl?: string; location?: string; availability?: string;
+  status: string; createdAt: string; updatedAt: string;
   skills: SkillDto[]; experience: ExperienceDto[];
   projects: ProjectDto[]; education: EducationDto[];
+  certifications: CertificationDto[];
 }
 
 export interface SearchRequest { query: string; topK?: number; }

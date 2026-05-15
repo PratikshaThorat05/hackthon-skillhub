@@ -1,5 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { ApiResponse, ProfileResponse } from '../../../core/models/models';
@@ -7,41 +8,110 @@ import { ApiResponse, ProfileResponse } from '../../../core/models/models';
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   template: `
     <div class="page">
-      @if (loading()) { <div class="loading">Loading profile...</div> }
+      @if (loading()) {
+        <div class="skeleton-loader">
+          <div class="skeleton-header"></div>
+          <div class="skeleton-body"></div>
+        </div>
+      }
       @if (profile()) {
+        @if (profile()!.status === 'Processing' || profile()!.status === 'Queued') {
+          <div class="processing-banner">
+            <span class="proc-spinner"></span>
+            <div>
+              <strong>AI is analyzing your resume</strong>
+              <span>This usually takes 15–30 seconds. Your profile will update automatically.</span>
+            </div>
+          </div>
+        }
         <div class="profile-card">
           <div class="profile-header">
             <div class="avatar">{{ profile()!.fullName[0] }}</div>
-            <div>
+            <div class="header-info">
               <h2>{{ profile()!.fullName }}</h2>
-              <p>{{ profile()!.currentTitle }}</p>
-              <span class="status-badge" [class]="profile()!.status.toLowerCase()">{{ profile()!.status }}</span>
+              <p class="title-text">{{ profile()!.currentTitle }}{{ profile()!.department ? ' · ' + profile()!.department : '' }}</p>
+              <div class="meta-row">
+                <span class="status-badge" [class]="profile()!.status.toLowerCase()">{{ profile()!.status }}</span>
+                @if (profile()!.availability) {
+                  <span class="avail-badge" [class]="profile()!.availability!.toLowerCase()">{{ profile()!.availability }}</span>
+                }
+                @if (profile()!.location) { <span class="location-text">📍 {{ profile()!.location }}</span> }
+                @if (profile()!.yearsOfExperience) { <span class="years-text">{{ profile()!.yearsOfExperience }}y exp</span> }
+              </div>
             </div>
+            <button class="btn-edit" (click)="toggleEdit()">{{ editing() ? 'Cancel' : '✏️ Edit' }}</button>
           </div>
+
+          @if (editing()) {
+            <div class="edit-form">
+              <h3>Edit Profile</h3>
+              <div class="form-grid">
+                <div class="field">
+                  <label>Full Name</label>
+                  <input [(ngModel)]="editData.fullName" placeholder="Your full name" />
+                </div>
+                <div class="field">
+                  <label>Current Title</label>
+                  <input [(ngModel)]="editData.currentTitle" placeholder="e.g. Senior Software Engineer" />
+                </div>
+                <div class="field">
+                  <label>Department</label>
+                  <input [(ngModel)]="editData.department" placeholder="e.g. Engineering" />
+                </div>
+                <div class="field">
+                  <label>Location</label>
+                  <input [(ngModel)]="editData.location" placeholder="e.g. Mumbai, India" />
+                </div>
+                <div class="field">
+                  <label>Availability</label>
+                  <select [(ngModel)]="editData.availability">
+                    <option value="">Select...</option>
+                    <option value="Available">Available</option>
+                    <option value="Busy">Busy</option>
+                    <option value="On Leave">On Leave</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>LinkedIn URL</label>
+                  <input [(ngModel)]="editData.linkedInUrl" placeholder="https://linkedin.com/in/..." />
+                </div>
+              </div>
+              <div class="form-actions">
+                <button class="btn-save" (click)="save()" [disabled]="saving()">{{ saving() ? 'Saving...' : 'Save Changes' }}</button>
+                @if (saveMsg()) { <span class="save-msg">{{ saveMsg() }}</span> }
+              </div>
+            </div>
+          }
+
           @if (profile()!.summary) {
             <div class="section">
               <h3>AI Summary</h3>
-              <p>{{ profile()!.summary }}</p>
+              <p class="summary-text">{{ profile()!.summary }}</p>
             </div>
           }
+
           <div class="section">
             <h3>Skills ({{ profile()!.skills.length }})</h3>
             <div class="skills-grid">
               @for (s of profile()!.skills; track s.id) {
                 <div class="skill-item">
-                  <span>{{ s.name }}</span>
+                  <span class="skill-name">{{ s.name }}</span>
+                  @if (s.category) { <span class="skill-cat">{{ s.category }}</span> }
                   <div class="prof-dots">
                     @for (i of [1,2,3,4,5]; track i) {
                       <span class="dot" [class.filled]="i <= s.proficiencyLevel"></span>
                     }
                   </div>
+                  <span class="prof-label" [class]="profClass(s.proficiencyLevel)">{{ profLabel(s.proficiencyLevel) }}</span>
+                  @if (s.yearsExperience) { <span class="skill-yrs">{{ s.yearsExperience }}y</span> }
                 </div>
               }
             </div>
           </div>
+
           @if (profile()!.experience.length > 0) {
             <div class="section">
               <h3>Experience</h3>
@@ -50,10 +120,16 @@ import { ApiResponse, ProfileResponse } from '../../../core/models/models';
                   <strong>{{ exp.jobTitle }}</strong> at {{ exp.companyName }}
                   <span class="date">{{ exp.startDate | date:'MMM yyyy' }} – {{ exp.isCurrent ? 'Present' : (exp.endDate | date:'MMM yyyy') }}</span>
                   @if (exp.description) { <p class="exp-desc">{{ exp.description }}</p> }
+                  @if (exp.techStack.length > 0) {
+                    <div class="tech-tags">
+                      @for (t of exp.techStack; track t) { <span class="tech-tag">{{ t }}</span> }
+                    </div>
+                  }
                 </div>
               }
             </div>
           }
+
           @if (profile()!.projects.length > 0) {
             <div class="section">
               <h3>Projects</h3>
@@ -70,6 +146,7 @@ import { ApiResponse, ProfileResponse } from '../../../core/models/models';
               }
             </div>
           }
+
           @if (profile()!.education.length > 0) {
             <div class="section">
               <h3>Education</h3>
@@ -84,6 +161,25 @@ import { ApiResponse, ProfileResponse } from '../../../core/models/models';
               }
             </div>
           }
+
+          @if (profile()!.certifications && profile()!.certifications.length > 0) {
+            <div class="section">
+              <h3>Certifications ({{ profile()!.certifications.length }})</h3>
+              @for (cert of profile()!.certifications; track cert.name) {
+                <div class="cert-item">
+                  <div class="cert-header">
+                    <strong>{{ cert.name }}</strong>
+                    @if (cert.credentialUrl) { <a [href]="cert.credentialUrl" target="_blank" class="cert-link">Verify ↗</a> }
+                  </div>
+                  @if (cert.issuingOrganization) { <span class="cert-org">{{ cert.issuingOrganization }}</span> }
+                  @if (cert.issueDate || cert.expiryDate) {
+                    <span class="date">{{ cert.issueDate }}{{ cert.expiryDate ? ' – ' + cert.expiryDate : '' }}</span>
+                  }
+                  @if (cert.credentialId) { <span class="cert-id">ID: {{ cert.credentialId }}</span> }
+                </div>
+              }
+            </div>
+          }
         </div>
       }
       @if (!loading() && !profile()) {
@@ -92,39 +188,134 @@ import { ApiResponse, ProfileResponse } from '../../../core/models/models';
     </div>
   `,
   styles: [`
-    .page { max-width:700px; margin:2rem auto; padding:0 1rem; }
-    .loading, .empty { text-align:center; color:#666; padding:3rem; }
+    .page { max-width:760px; margin:0 auto; padding:2rem 1.5rem; }
+    .skeleton-loader { background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+    .skeleton-header { height: 80px; background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; margin-bottom: 1rem; }
+    .skeleton-body { height: 200px; background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    .processing-banner {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.25rem;
+      font-size: .875rem;
+      color: #78350f;
+    }
+    .processing-banner strong { display: block; font-weight: 600; margin-bottom: .15rem; color: #92400e; }
+    .processing-banner span { color: #78350f; }
+    .proc-spinner { width: 20px; height: 20px; border: 2.5px solid #fde68a; border-top-color: #d97706; border-radius: 50%; animation: spin .8s linear infinite; flex-shrink: 0; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .empty { text-align:center; color:#666; padding:3rem; }
+    .empty a { color:#4f46e5; }
     .profile-card { background:white; border-radius:12px; padding:2rem; box-shadow:0 2px 12px rgba(0,0,0,.08); }
     .profile-header { display:flex; gap:1.25rem; align-items:flex-start; margin-bottom:1.5rem; }
     .avatar { width:64px; height:64px; background:#4f46e5; color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.5rem; font-weight:700; flex-shrink:0; }
-    h2 { margin:0; font-size:1.4rem; color:#1a1a2e; }
-    h3 { font-size:1rem; color:#374151; margin:0 0 .75rem; border-bottom:1px solid #f3f4f6; padding-bottom:.4rem; }
-    .section { margin-bottom:1.5rem; }
+    .header-info { flex:1; }
+    h2 { margin:0 0 .2rem; font-size:1.4rem; color:#1a1a2e; }
+    .title-text { margin:0 0 .4rem; color:#6b7280; font-size:.92rem; }
+    .meta-row { display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; }
+    .years-text, .location-text { font-size:.82rem; color:#6b7280; }
+    .btn-edit { padding:.4rem .9rem; background:#f1f5f9; border:1px solid #e2e8f0; border-radius:8px; font-size:.83rem; cursor:pointer; color:#4f46e5; font-weight:600; flex-shrink:0; }
     .status-badge { padding:.2rem .7rem; border-radius:9999px; font-size:.78rem; font-weight:600; }
     .status-badge.approved { background:#dcfce7; color:#166534; }
     .status-badge.pending { background:#fef9c3; color:#92400e; }
     .status-badge.rejected { background:#fee2e2; color:#dc2626; }
+    .avail-badge { padding:.2rem .6rem; border-radius:9999px; font-size:.72rem; font-weight:600; }
+    .avail-badge.available { background:#dcfce7; color:#166534; }
+    .avail-badge.busy { background:#fee2e2; color:#dc2626; }
+    .avail-badge.on.leave { background:#fef9c3; color:#92400e; }
+    h3 { font-size:1rem; color:#374151; margin:0 0 .75rem; border-bottom:1px solid #f3f4f6; padding-bottom:.4rem; }
+    .section { margin-bottom:1.5rem; }
+    .summary-text { color:#4b5563; line-height:1.6; font-size:.92rem; }
+    .edit-form { background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:1.25rem; margin-bottom:1.5rem; }
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; margin-bottom:1rem; }
+    .field { display:flex; flex-direction:column; gap:.3rem; }
+    .field label { font-size:.8rem; font-weight:600; color:#374151; }
+    .field input, .field select { padding:.5rem .75rem; border:1.5px solid #e5e7eb; border-radius:8px; font-size:.88rem; }
+    .field input:focus, .field select:focus { outline:none; border-color:#4f46e5; }
+    .form-actions { display:flex; align-items:center; gap:1rem; }
+    .btn-save { padding:.5rem 1.2rem; background:#4f46e5; color:white; border:none; border-radius:8px; font-size:.88rem; font-weight:600; cursor:pointer; }
+    .btn-save:disabled { opacity:.6; cursor:not-allowed; }
+    .save-msg { font-size:.85rem; color:#059669; font-weight:500; }
     .skills-grid { display:flex; flex-wrap:wrap; gap:.5rem; }
-    .skill-item { display:flex; align-items:center; gap:.5rem; background:#f8fafc; padding:.4rem .8rem; border-radius:8px; font-size:.85rem; }
+    .skill-item { display:flex; align-items:center; gap:.4rem; background:#f8fafc; padding:.4rem .8rem; border-radius:8px; font-size:.85rem; flex-wrap:wrap; }
+    .skill-name { font-weight:500; color:#1a1a2e; }
+    .skill-cat { font-size:.72rem; color:#9ca3af; background:#e5e7eb; padding:.1rem .35rem; border-radius:4px; }
     .prof-dots { display:flex; gap:2px; }
     .dot { width:8px; height:8px; border-radius:50%; background:#e5e7eb; }
     .dot.filled { background:#4f46e5; }
+    .prof-label { font-size:.72rem; font-weight:600; padding:.1rem .4rem; border-radius:4px; }
+    .prof-label.beginner { background:#fef9c3; color:#92400e; }
+    .prof-label.basic { background:#fef3c7; color:#d97706; }
+    .prof-label.intermediate { background:#dbeafe; color:#1e40af; }
+    .prof-label.advanced { background:#dcfce7; color:#166534; }
+    .prof-label.expert { background:#ede9fe; color:#6d28d9; }
+    .skill-yrs { font-size:.72rem; color:#9ca3af; }
     .exp-item, .proj-item, .edu-item { margin-bottom:.75rem; font-size:.9rem; color:#374151; }
     .exp-desc, .proj-desc { margin:.3rem 0 0; font-size:.85rem; color:#6b7280; }
     .edu-detail { font-weight:400; color:#6b7280; }
     .date { display:block; font-size:.8rem; color:#9ca3af; margin-top:.2rem; }
     .tech-tags { display:flex; flex-wrap:wrap; gap:.3rem; margin-top:.4rem; }
     .tech-tag { padding:.15rem .5rem; background:#ede9fe; color:#6d28d9; border-radius:4px; font-size:.75rem; }
+    .cert-item { margin-bottom:.85rem; font-size:.9rem; color:#374151; padding-bottom:.75rem; border-bottom:1px solid #f9fafb; }
+    .cert-header { display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; }
+    .cert-org { display:block; font-size:.82rem; color:#6b7280; margin-top:.15rem; }
+    .cert-id { display:block; font-size:.75rem; color:#9ca3af; margin-top:.1rem; }
+    .cert-link { font-size:.78rem; color:#4f46e5; text-decoration:none; margin-left:.25rem; }
   `]
 })
 export class ProfileComponent implements OnInit {
   profile = signal<ProfileResponse | null>(null);
   loading = signal(true);
+  editing = signal(false);
+  saving = signal(false);
+  saveMsg = signal('');
+  editData = { fullName: '', currentTitle: '', department: '', location: '', availability: '', linkedInUrl: '' };
+
   constructor(private http: HttpClient) {}
-  ngOnInit() {
+
+  ngOnInit() { this.loadProfile(); }
+
+  loadProfile() {
     this.http.get<ApiResponse<ProfileResponse>>(`${environment.apiUrl}/profiles/me`).subscribe({
       next: res => { if (res.success) this.profile.set(res.data!); this.loading.set(false); },
       error: () => this.loading.set(false)
     });
+  }
+
+  toggleEdit() {
+    const p = this.profile();
+    if (!this.editing() && p) {
+      this.editData = { fullName: p.fullName, currentTitle: p.currentTitle ?? '', department: p.department ?? '', location: p.location ?? '', availability: p.availability ?? '', linkedInUrl: p.linkedInUrl ?? '' };
+    }
+    this.editing.update(v => !v);
+    this.saveMsg.set('');
+  }
+
+  save() {
+    this.saving.set(true);
+    this.http.patch<ApiResponse<ProfileResponse>>(`${environment.apiUrl}/profiles/me`, this.editData).subscribe({
+      next: res => {
+        this.saving.set(false);
+        if (res.success && res.data) {
+          this.profile.set(res.data);
+          this.editing.set(false);
+          this.saveMsg.set('Profile updated!');
+          setTimeout(() => this.saveMsg.set(''), 3000);
+        }
+      },
+      error: () => { this.saving.set(false); this.saveMsg.set('Save failed.'); }
+    });
+  }
+
+  profLabel(level: number): string {
+    return ['', 'Beginner', 'Basic', 'Intermediate', 'Advanced', 'Expert'][level] ?? 'Unknown';
+  }
+  profClass(level: number): string {
+    return ['', 'beginner', 'basic', 'intermediate', 'advanced', 'expert'][level] ?? '';
   }
 }

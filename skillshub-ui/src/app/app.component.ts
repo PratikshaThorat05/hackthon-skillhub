@@ -10,15 +10,16 @@ import { AuthService } from './core/auth/auth.service';
   imports: [CommonModule, RouterOutlet, NavbarComponent],
   template: `
     @if (auth.isLoggedIn()) {
-      <app-navbar />
-    }
-    <main>
+      <div class="app-shell">
+        <app-navbar />
+        <main class="main-content">
+          <router-outlet />
+        </main>
+      </div>
+    } @else {
       <router-outlet />
-    </main>
-  `,
-  styles: [`
-    main { padding: 1rem 0; }
-  `]
+    }
+  `
 })
 export class AppComponent {
   constructor(public auth: AuthService) {}

@@ -13,6 +13,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<WorkExperience> WorkExperiences => Set<WorkExperience>();
     public DbSet<Project> Projects => Set<Project>();
     public DbSet<Education> Educations => Set<Education>();
+    public DbSet<Certification> Certifications => Set<Certification>();
     public DbSet<ProfileEmbedding> ProfileEmbeddings => Set<ProfileEmbedding>();
     public DbSet<SearchHistory> SearchHistories => Set<SearchHistory>();
 

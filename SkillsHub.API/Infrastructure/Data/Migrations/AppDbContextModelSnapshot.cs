@@ -22,6 +22,41 @@ namespace SkillsHub.API.Infrastructure.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("SkillsHub.API.Infrastructure.Data.Entities.Certification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CredentialId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CredentialUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly?>("ExpiryDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("IssueDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("IssuingOrganization")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ProfileId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProfileId");
+
+                    b.ToTable("Certifications");
+                });
+
             modelBuilder.Entity("SkillsHub.API.Infrastructure.Data.Entities.Education", b =>
                 {
                     b.Property<int>("Id")
@@ -65,6 +100,9 @@ namespace SkillsHub.API.Infrastructure.Data.Migrations
                     b.Property<Guid?>("ApprovedBy")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Availability")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -79,6 +117,9 @@ namespace SkillsHub.API.Infrastructure.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LinkedInUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Location")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
@@ -528,6 +569,17 @@ namespace SkillsHub.API.Infrastructure.Data.Migrations
                     b.ToTable("WorkExperiences");
                 });
 
+            modelBuilder.Entity("SkillsHub.API.Infrastructure.Data.Entities.Certification", b =>
+                {
+                    b.HasOne("SkillsHub.API.Infrastructure.Data.Entities.EmployeeProfile", "Profile")
+                        .WithMany("Certifications")
+                        .HasForeignKey("ProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Profile");
+                });
+
             modelBuilder.Entity("SkillsHub.API.Infrastructure.Data.Entities.Education", b =>
                 {
                     b.HasOne("SkillsHub.API.Infrastructure.Data.Entities.EmployeeProfile", "Profile")
@@ -626,6 +678,8 @@ namespace SkillsHub.API.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("SkillsHub.API.Infrastructure.Data.Entities.EmployeeProfile", b =>
                 {
+                    b.Navigation("Certifications");
+
                     b.Navigation("Educations");
 
                     b.Navigation("Embedding");

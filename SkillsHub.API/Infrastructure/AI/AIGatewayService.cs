@@ -20,6 +20,34 @@ public class AIGatewayService(HttpClient http, ILogger<AIGatewayService> logger)
         }
     }
 
+    public async Task<(ParseResumeResponse? Result, string? Error)> ParseLinkedInAsync(LinkedInParseRequest request, CancellationToken ct = default)
+    {
+        try
+        {
+            var response = await http.PostAsJsonAsync("/parse-linkedin", request, ct);
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync(ct);
+                // Extract the "detail" field from FastAPI's 422 response
+                try
+                {
+                    using var doc = System.Text.Json.JsonDocument.Parse(body);
+                    if (doc.RootElement.TryGetProperty("detail", out var detail))
+                        return (null, detail.GetString());
+                }
+                catch { }
+                return (null, $"LinkedIn parsing failed (HTTP {(int)response.StatusCode})");
+            }
+            var result = await response.Content.ReadFromJsonAsync<ParseResumeResponse>(ct);
+            return (result, null);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to parse LinkedIn profile via AI service");
+            return (null, "AI service unavailable");
+        }
+    }
+
     public async Task<EmbedProfileResponse?> EmbedProfileAsync(EmbedProfileRequest request, CancellationToken ct = default)
     {
         try

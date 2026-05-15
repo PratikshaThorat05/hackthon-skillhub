@@ -10,6 +10,8 @@ public class EmployeeProfile
     public decimal? YearsOfExperience { get; set; }
     public string? Summary { get; set; }
     public string? LinkedInUrl { get; set; }
+    public string? Location { get; set; }
+    public string? Availability { get; set; } // Available | Busy | OnLeave
     public string Status { get; set; } = "Pending"; // Pending | Approved | Rejected
     public Guid? ApprovedBy { get; set; }
     public DateTime? ApprovedAt { get; set; }
@@ -21,5 +23,6 @@ public class EmployeeProfile
     public ICollection<WorkExperience> Experiences { get; set; } = [];
     public ICollection<Project> Projects { get; set; } = [];
     public ICollection<Education> Educations { get; set; } = [];
+    public ICollection<Certification> Certifications { get; set; } = [];
     public ProfileEmbedding? Embedding { get; set; }
 }

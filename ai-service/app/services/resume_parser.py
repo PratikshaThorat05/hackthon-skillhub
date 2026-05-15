@@ -31,11 +31,23 @@ Return ONLY valid JSON matching this exact schema — no markdown, no explanatio
   "education": [
     {"institution": "MIT", "degree": "B.S.", "field_of_study": "CS", "graduation_year": 2019}
   ],
+  "certifications": [
+    {
+      "name": "AWS Certified Solutions Architect",
+      "issuing_organization": "Amazon Web Services",
+      "credential_id": "ABC-12345",
+      "credential_url": null,
+      "issue_date": "2022-06",
+      "expiry_date": "2025-06"
+    }
+  ],
   "total_years_experience": 6.5
 }
 
 Proficiency scale: 1=Beginner, 2=Basic, 3=Intermediate, 4=Advanced, 5=Expert
 Infer proficiency from role seniority and years of experience with that skill.
+For certifications: extract ALL certifications, licenses, and professional credentials mentioned.
+Dates should be in "yyyy-MM" format when available, null otherwise.
 
 Resume text:
 """
@@ -148,5 +160,6 @@ def _mock_parse(text: str) -> dict:
                 "graduation_year": 2020
             }
         ],
+        "certifications": [],
         "total_years_experience": 4.0
     }

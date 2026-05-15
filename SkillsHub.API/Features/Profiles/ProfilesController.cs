@@ -29,6 +29,13 @@ public class ProfilesController(ProfileService profileService) : ControllerBase
         return Ok(ApiResponse<ProfileResponse>.Ok(profile, "Profile updated"));
     }
 
+    [HttpGet("directory")]
+    public async Task<ActionResult<ApiResponse<List<ProfileSummaryResponse>>>> GetDirectory()
+    {
+        var items = await profileService.GetDirectoryAsync();
+        return Ok(ApiResponse<List<ProfileSummaryResponse>>.Ok(items));
+    }
+
     [HttpGet("{id:guid}")]
     [Authorize(Roles = "HR,Admin")]
     public async Task<ActionResult<ApiResponse<ProfileResponse>>> GetProfile(Guid id)

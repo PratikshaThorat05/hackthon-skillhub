@@ -88,10 +88,10 @@ import { ApiResponse, SearchResponse, SearchResultItem } from '../../../core/mod
     </div>
   `,
   styles: [`
-    .search-page { max-width:900px; margin:0 auto; padding:2rem; }
+    .search-page { max-width:900px; margin:0 auto; padding:2rem 1.5rem; }
     .search-header { margin-bottom:2rem; }
-    h1 { font-size:2rem; font-weight:700; color:#1a1a2e; margin-bottom:.25rem; }
-    .search-header > p { color:#666; margin-bottom:1.25rem; }
+    h1 { font-size:1.5rem; font-weight:700; color:#0f172a; margin-bottom:.25rem; }
+    .search-header > p { color:#64748b; font-size:.9rem; margin-bottom:1.25rem; }
     .search-bar { display:flex; gap:.75rem; }
     .search-input { flex:1; padding:.85rem 1.25rem; border:2px solid #e5e7eb; border-radius:12px; font-size:1rem; }
     .search-input:focus { outline:none; border-color:#4f46e5; }

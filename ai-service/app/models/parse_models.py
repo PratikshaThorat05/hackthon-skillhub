@@ -10,6 +10,12 @@ class ParseResumeRequest(BaseModel):
     profile_id: str = ""
 
 
+class LinkedInParseRequest(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, extra="ignore")
+
+    url: str
+
+
 class ExtractedSkill(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
@@ -49,6 +55,17 @@ class ExtractedEducation(BaseModel):
     graduation_year: Optional[int] = None
 
 
+class ExtractedCertification(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+
+    name: str
+    issuing_organization: Optional[str] = None
+    credential_id: Optional[str] = None
+    credential_url: Optional[str] = None
+    issue_date: Optional[str] = None
+    expiry_date: Optional[str] = None
+
+
 class ParseResumeResponse(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
@@ -57,4 +74,5 @@ class ParseResumeResponse(BaseModel):
     experience: list[ExtractedExperience]
     projects: list[ExtractedProject]
     education: list[ExtractedEducation]
+    certifications: list[ExtractedCertification] = []
     total_years_experience: float

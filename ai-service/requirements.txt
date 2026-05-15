@@ -10,3 +10,4 @@ python-docx==1.1.2
 python-multipart==0.0.12
 numpy==1.26.4
 python-dotenv==1.0.1
+linkedin-api==2.3.1

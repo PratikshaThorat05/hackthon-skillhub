@@ -43,25 +43,32 @@ import { ApiResponse, PagedResponse, ProfileSummary } from '../../../core/models
     </div>
   `,
   styles: [`
-    .page { max-width:800px; margin:2rem auto; padding:0 1rem; }
-    .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; }
-    h2 { margin:0; font-size:1.4rem; color:#1a1a2e; }
-    .filters { display:flex; gap:.5rem; }
-    .filter-btn { padding:.3rem .8rem; border:1.5px solid #e5e7eb; border-radius:8px; background:white; cursor:pointer; font-size:.85rem; }
-    .filter-btn.active { background:#4f46e5; color:white; border-color:#4f46e5; }
-    .loading { text-align:center; color:#666; padding:2rem; }
-    .profile-row { display:flex; align-items:center; gap:1rem; background:white; padding:1rem 1.25rem; border-radius:10px; border:1.5px solid #e5e7eb; margin-bottom:.75rem; }
-    .avatar { width:40px; height:40px; background:#e0e7ff; color:#4f46e5; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; flex-shrink:0; }
-    .info { flex:1; display:flex; flex-direction:column; gap:.1rem; font-size:.9rem; color:#374151; }
-    .meta { font-size:.78rem; color:#9ca3af; }
-    .status-badge { padding:.2rem .6rem; border-radius:9999px; font-size:.75rem; font-weight:600; }
+    .page { max-width:900px; margin:0 auto; padding:2rem 1.5rem; }
+    .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:.75rem; }
+    h2 { margin:0; font-size:1.5rem; font-weight:700; color:#0f172a; }
+    .filters { display:flex; gap:.4rem; background:white; border:1px solid #e2e8f0; border-radius:8px; padding:.25rem; }
+    .filter-btn { padding:.35rem .85rem; border:none; border-radius:6px; background:transparent; cursor:pointer; font-size:.82rem; font-weight:500; color:#64748b; font-family:inherit; }
+    .filter-btn.active { background:#4f46e5; color:white; font-weight:600; }
+    .filter-btn:hover:not(.active) { background:#f1f5f9; }
+    .loading { text-align:center; color:#64748b; padding:3rem; font-size:.9rem; }
+    .profile-row { display:flex; align-items:center; gap:1rem; background:white; padding:1rem 1.25rem; border-radius:10px; border:1px solid #e2e8f0; margin-bottom:.6rem; box-shadow:0 1px 2px rgba(0,0,0,.04); transition:.15s; }
+    .profile-row:hover { border-color:#a5b4fc; box-shadow:0 2px 8px rgba(79,70,229,.08); }
+    .avatar { width:40px; height:40px; background:#ede9fe; color:#6d28d9; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:700; flex-shrink:0; font-size:.95rem; }
+    .info { flex:1; display:flex; flex-direction:column; gap:.1rem; font-size:.875rem; color:#374151; }
+    .info strong { color:#0f172a; font-size:.9rem; }
+    .meta { font-size:.75rem; color:#94a3b8; }
+    .status-badge { padding:.25rem .7rem; border-radius:9999px; font-size:.72rem; font-weight:700; white-space:nowrap; }
     .status-badge.approved { background:#dcfce7; color:#166534; }
     .status-badge.pending { background:#fef9c3; color:#92400e; }
     .status-badge.rejected { background:#fee2e2; color:#dc2626; }
-    .actions { display:flex; gap:.5rem; }
-    .btn-view { padding:.35rem .7rem; background:#f1f5f9; color:#4f46e5; border:1px solid #e2e8f0; border-radius:6px; font-size:.82rem; text-decoration:none; font-weight:600; }
-    .btn-approve { padding:.35rem .85rem; background:#059669; color:white; border:none; border-radius:6px; font-size:.82rem; cursor:pointer; }
-    .btn-reject { padding:.35rem .85rem; background:#dc2626; color:white; border:none; border-radius:6px; font-size:.82rem; cursor:pointer; }
+    .status-badge.processing { background:#dbeafe; color:#1e40af; }
+    .actions { display:flex; gap:.4rem; }
+    .btn-view { padding:.35rem .75rem; background:#f8fafc; color:#4f46e5; border:1px solid #e2e8f0; border-radius:6px; font-size:.8rem; text-decoration:none; font-weight:600; white-space:nowrap; }
+    .btn-view:hover { background:#ede9fe; border-color:#a5b4fc; }
+    .btn-approve { padding:.35rem .85rem; background:#059669; color:white; border:none; border-radius:6px; font-size:.8rem; cursor:pointer; font-weight:600; font-family:inherit; }
+    .btn-approve:hover { background:#047857; }
+    .btn-reject { padding:.35rem .85rem; background:white; color:#dc2626; border:1px solid #fca5a5; border-radius:6px; font-size:.8rem; cursor:pointer; font-weight:600; font-family:inherit; }
+    .btn-reject:hover { background:#fef2f2; }
   `]
 })
 export class ProfilesComponent implements OnInit {

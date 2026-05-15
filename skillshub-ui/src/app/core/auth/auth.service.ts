@@ -33,6 +33,12 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
+  clearSession(): void {
+    localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.USER_KEY);
+    this.currentUser.set(null);
+  }
+
   getToken(): string | null { return localStorage.getItem(this.TOKEN_KEY); }
   isLoggedIn(): boolean { return !!this.getToken(); }
   isHR(): boolean { return this.currentUser()?.role === 'HR' || this.currentUser()?.role === 'Admin'; }

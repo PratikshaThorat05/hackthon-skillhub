@@ -65,6 +65,7 @@ builder.Services.AddScoped<JwtTokenService>();
 builder.Services.AddScoped<ResumeService>();
 builder.Services.AddScoped<ProfileService>();
 builder.Services.AddScoped<HRService>();
+builder.Services.AddScoped<DemoDataService>();
 builder.Services.AddScoped<SearchService>();
 builder.Services.AddScoped<LocalFileStorageService>();
 
