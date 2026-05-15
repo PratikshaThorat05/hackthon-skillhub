@@ -1,0 +1,5 @@
+.env
+*.env
+.env
+ai-service/.env
+logs/
