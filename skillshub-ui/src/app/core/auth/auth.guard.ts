@@ -15,3 +15,12 @@ export const hrGuard: CanActivateFn = () => {
   inject(Router).navigate(['/login']);
   return false;
 };
+
+// Redirects already-logged-in users away from public pages (login/register)
+export const publicGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  if (!auth.isLoggedIn()) return true;
+  const router = inject(Router);
+  router.navigate([auth.isHR() ? '/hr/search' : '/employee/upload']);
+  return false;
+};

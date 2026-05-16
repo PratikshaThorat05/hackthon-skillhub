@@ -46,3 +46,6 @@ public record UpdateProfileRequest(
     string? Location,
     string? Availability
 );
+
+public record UpdateSkillsRequest(List<SkillEdit> Skills);
+public record SkillEdit(string Name, string? Category, int Proficiency, decimal? Years);

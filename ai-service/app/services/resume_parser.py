@@ -49,6 +49,29 @@ Infer proficiency from role seniority and years of experience with that skill.
 For certifications: extract ALL certifications, licenses, and professional credentials mentioned.
 Dates should be in "yyyy-MM" format when available, null otherwise.
 
+IMPORTANT — Infer implied skills not explicitly mentioned:
+Use the following rules to add skills the person clearly has based on what they DO mention.
+Set years=null for inferred skills and proficiency one level below the explicit parent skill.
+- Next.js user → add React (if not already listed)
+- React Native user → add React (if not already listed)
+- Angular user → add TypeScript (if not already listed)
+- NestJS user → add Node.js and TypeScript (if not already listed)
+- Express.js / Fastify user → add Node.js (if not already listed)
+- Vue.js / Nuxt.js user → add JavaScript (if not already listed)
+- Django / Flask / FastAPI user → add Python (if not already listed)
+- Ruby on Rails user → add Ruby (if not already listed)
+- Spring Boot user → add Java (if not already listed)
+- ASP.NET / .NET user → add C# (if not already listed)
+- Kubernetes / Helm user → add Docker (if not already listed)
+- Terraform / Pulumi user → add Infrastructure as Code (if not already listed)
+- Any AWS service (EC2, S3, Lambda, EKS…) → add AWS (if not already listed)
+- Any Azure service → add Azure (if not already listed)
+- Any GCP service → add Google Cloud (if not already listed)
+- GraphQL user → add REST APIs (if not already listed)
+- PostgreSQL / MySQL / SQLite user → add SQL (if not already listed)
+- MongoDB / DynamoDB user → add NoSQL (if not already listed)
+- Someone with 3+ years of a framework implicitly knows the underlying language at Advanced level.
+
 Resume text:
 """
 

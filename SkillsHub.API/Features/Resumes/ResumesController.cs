@@ -41,6 +41,16 @@ public class ResumesController(ResumeService resumeService) : ControllerBase
         return Ok(ApiResponse<ResumeUploadResponse>.Ok(response!));
     }
 
+    [HttpPost("upload-github")]
+    public async Task<ActionResult<ApiResponse<ResumeUploadResponse>>> UploadGitHub([FromBody] GitHubUploadRequest req)
+    {
+        if (string.IsNullOrWhiteSpace(req.GitHubUrl))
+            return BadRequest(ApiResponse<ResumeUploadResponse>.Fail("GitHub URL is required"));
+        var (success, error, response) = await resumeService.UploadFromGitHubAsync(req.GitHubUrl, CurrentUserId);
+        if (!success) return BadRequest(ApiResponse<ResumeUploadResponse>.Fail(error));
+        return Ok(ApiResponse<ResumeUploadResponse>.Ok(response!));
+    }
+
     [HttpGet("status")]
     public async Task<ActionResult<ApiResponse<ResumeStatusResponse>>> Status()
     {

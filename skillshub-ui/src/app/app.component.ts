@@ -12,7 +12,7 @@ import { AuthService } from './core/auth/auth.service';
     @if (auth.isLoggedIn()) {
       <div class="app-shell">
         <app-navbar />
-        <main class="main-content">
+        <main class="main-content" id="main-content" tabindex="-1">
           <router-outlet />
         </main>
       </div>

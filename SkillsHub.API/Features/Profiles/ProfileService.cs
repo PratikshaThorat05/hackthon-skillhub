@@ -2,6 +2,7 @@ using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using SkillsHub.API.Features.Profiles.DTOs;
 using SkillsHub.API.Infrastructure.Data;
+using SkillsHub.API.Infrastructure.Data.Entities;
 
 namespace SkillsHub.API.Features.Profiles;
 
@@ -80,6 +81,47 @@ public class ProfileService(AppDbContext db)
 
         await db.SaveChangesAsync();
         return await GetByIdAsync(profileId);
+    }
+
+    public async Task<ProfileResponse?> UpdateSkillsAsync(Guid userId, List<SkillEdit> skills)
+    {
+        var profile = await db.EmployeeProfiles
+            .Include(p => p.Skills).ThenInclude(s => s.Skill)
+            .FirstOrDefaultAsync(p => p.UserId == userId);
+        if (profile is null) return null;
+        await ApplySkillEditsAsync(profile, skills);
+        return await GetByUserIdAsync(userId);
+    }
+
+    public async Task<ProfileResponse?> UpdateSkillsByIdAsync(Guid profileId, List<SkillEdit> skills)
+    {
+        var profile = await db.EmployeeProfiles
+            .Include(p => p.Skills).ThenInclude(s => s.Skill)
+            .FirstOrDefaultAsync(p => p.Id == profileId);
+        if (profile is null) return null;
+        await ApplySkillEditsAsync(profile, skills);
+        return await GetByIdAsync(profileId);
+    }
+
+    private async Task ApplySkillEditsAsync(EmployeeProfile profile, List<SkillEdit> skills)
+    {
+        db.EmployeeSkills.RemoveRange(profile.Skills);
+        await db.SaveChangesAsync();
+        foreach (var s in skills)
+        {
+            var skillEntity = await db.Skills.FirstOrDefaultAsync(sk => sk.Name == s.Name)
+                ?? new Skill { Name = s.Name, Category = s.Category };
+            if (skillEntity.Id == 0) { db.Skills.Add(skillEntity); await db.SaveChangesAsync(); }
+            db.EmployeeSkills.Add(new EmployeeSkill
+            {
+                ProfileId = profile.Id,
+                SkillId = skillEntity.Id,
+                ProficiencyLevel = Math.Clamp(s.Proficiency, 1, 5),
+                YearsExperience = s.Years
+            });
+        }
+        profile.UpdatedAt = DateTime.UtcNow;
+        await db.SaveChangesAsync();
     }
 
     public static ProfileResponse MapToDto(Infrastructure.Data.Entities.EmployeeProfile p) => new(

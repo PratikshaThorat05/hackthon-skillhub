@@ -36,6 +36,14 @@ public class ProfilesController(ProfileService profileService) : ControllerBase
         return Ok(ApiResponse<List<ProfileSummaryResponse>>.Ok(items));
     }
 
+    [HttpPatch("me/skills")]
+    public async Task<ActionResult<ApiResponse<ProfileResponse>>> UpdateMySkills([FromBody] UpdateSkillsRequest req)
+    {
+        var profile = await profileService.UpdateSkillsAsync(CurrentUserId, req.Skills);
+        if (profile is null) return NotFound(ApiResponse<ProfileResponse>.Fail("Profile not found"));
+        return Ok(ApiResponse<ProfileResponse>.Ok(profile, "Skills updated"));
+    }
+
     [HttpGet("{id:guid}")]
     [Authorize(Roles = "HR,Admin")]
     public async Task<ActionResult<ApiResponse<ProfileResponse>>> GetProfile(Guid id)

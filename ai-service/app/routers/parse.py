@@ -1,8 +1,9 @@
 import logging
 from fastapi import APIRouter, HTTPException
-from app.models.parse_models import ParseResumeRequest, ParseResumeResponse, LinkedInParseRequest
+from app.models.parse_models import ParseResumeRequest, ParseResumeResponse, LinkedInParseRequest, GitHubParseRequest
 from app.services.resume_parser import parse_resume
 from app.services.linkedin_fetcher import fetch_linkedin_text
+from app.services.github_fetcher import fetch_github_text
 from app.core.config import settings
 
 router = APIRouter()
@@ -21,6 +22,18 @@ async def parse_linkedin_endpoint(req: LinkedInParseRequest):
     logger.info("Parsing LinkedIn profile: %s", req.url[:80])
     try:
         text = await fetch_linkedin_text(req.url, settings.linkedin_email, settings.linkedin_password)
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    result = await parse_resume(text, settings.openai_api_key, settings.openai_model)
+    return ParseResumeResponse(**result)
+
+
+@router.post("/parse-github", response_model=ParseResumeResponse, response_model_by_alias=True)
+async def parse_github_endpoint(req: GitHubParseRequest):
+    logger.info("Parsing GitHub profile: %s", req.url[:80])
+    try:
+        token = settings.github_token or None
+        text = await fetch_github_text(req.url, token)
     except ValueError as e:
         raise HTTPException(status_code=422, detail=str(e))
     result = await parse_resume(text, settings.openai_api_key, settings.openai_model)

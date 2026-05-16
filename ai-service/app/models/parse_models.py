@@ -16,6 +16,12 @@ class LinkedInParseRequest(BaseModel):
     url: str
 
 
+class GitHubParseRequest(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, extra="ignore")
+
+    url: str
+
+
 class ExtractedSkill(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 

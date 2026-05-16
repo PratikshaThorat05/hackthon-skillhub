@@ -2,6 +2,7 @@ namespace SkillsHub.API.Infrastructure.AI.Models;
 
 public record ParseResumeRequest(string Text, string ProfileId);
 public record LinkedInParseRequest(string Url);
+public record GitHubParseRequest(string Url);
 
 public record ExtractedSkill(string Name, string? Category, int Proficiency, decimal? Years);
 public record ExtractedExperience(string Company, string Title, string? StartDate, string? EndDate, bool IsCurrent, string? Description, List<string> TechStack);

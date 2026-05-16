@@ -249,6 +249,93 @@ public class ResumeService(
         }
     }
 
+    public async Task<(bool Success, string Error, ResumeUploadResponse? Response)> UploadFromGitHubAsync(string gitHubUrl, Guid userId)
+    {
+        if (string.IsNullOrWhiteSpace(gitHubUrl) || !gitHubUrl.Contains("github"))
+            return (false, "Please provide a valid GitHub profile URL (e.g. https://github.com/username)", null);
+
+        var previous = await db.Resumes.Where(r => r.UserId == userId && r.IsActive).ToListAsync();
+        previous.ForEach(r => r.IsActive = false);
+
+        var resume = new Resume
+        {
+            UserId = userId,
+            FileName = "GitHub Profile",
+            StoragePath = gitHubUrl,
+            FileSizeBytes = 0,
+            ContentType = "application/x-github"
+        };
+        db.Resumes.Add(resume);
+        await db.SaveChangesAsync();
+
+        _ = Task.Run(() => ProcessGitHubAsync(resume.Id, userId, gitHubUrl));
+
+        return (true, string.Empty, new ResumeUploadResponse(resume.Id, "GitHub Profile", resume.ParseStatus, "GitHub profile import started. AI is inferring your skills..."));
+    }
+
+    public async Task<(bool Success, string Error, ResumeUploadResponse? Response)> UploadGitHubForEmployeeAsync(string gitHubUrl, string employeeEmail)
+    {
+        var user = await db.Users.FirstOrDefaultAsync(u => u.Email == employeeEmail);
+        if (user is null)
+        {
+            user = new User { Email = employeeEmail, PasswordHash = BCrypt.Net.BCrypt.HashPassword(Guid.NewGuid().ToString()), Role = "Employee" };
+            db.Users.Add(user);
+            await db.SaveChangesAsync();
+        }
+        return await UploadFromGitHubAsync(gitHubUrl, user.Id);
+    }
+
+    private async Task ProcessGitHubAsync(Guid resumeId, Guid userId, string gitHubUrl)
+    {
+        using var serviceScope = scopeFactory.CreateScope();
+        var scopedDb = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var scopedAi = serviceScope.ServiceProvider.GetRequiredService<IAIGatewayService>();
+        try
+        {
+            var resume = await scopedDb.Resumes.FindAsync(resumeId);
+            if (resume is null) return;
+            resume.ParseStatus = "Processing";
+            await scopedDb.SaveChangesAsync();
+
+            var profile = await scopedDb.EmployeeProfiles
+                .Include(p => p.Skills).Include(p => p.Experiences)
+                .Include(p => p.Projects).Include(p => p.Educations).Include(p => p.Certifications)
+                .FirstOrDefaultAsync(p => p.UserId == userId);
+
+            if (profile is null)
+            {
+                var user = await scopedDb.Users.FindAsync(userId);
+                profile = new EmployeeProfile { UserId = userId, FullName = user?.Email ?? "Unknown" };
+                scopedDb.EmployeeProfiles.Add(profile);
+                await scopedDb.SaveChangesAsync();
+            }
+
+            var (parseResult, parseError) = await scopedAi.ParseGitHubAsync(new Infrastructure.AI.Models.GitHubParseRequest(gitHubUrl));
+
+            if (parseResult is null)
+            {
+                resume.ParseStatus = "Failed";
+                resume.ParseError = parseError ?? "GitHub parsing failed";
+                await scopedDb.SaveChangesAsync();
+                return;
+            }
+
+            await ApplyParseResultAsync(profile, parseResult, scopedDb, scopedAi);
+            resume.ParseStatus = "Done";
+            resume.ParsedAt = DateTime.UtcNow;
+            await scopedDb.SaveChangesAsync();
+            logger.LogInformation("GitHub profile {Url} processed for user {UserId}", gitHubUrl, userId);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error processing GitHub profile {ResumeId}", resumeId);
+            using var errScope = scopeFactory.CreateScope();
+            var errDb = errScope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var resume = await errDb.Resumes.FindAsync(resumeId);
+            if (resume is not null) { resume.ParseStatus = "Failed"; resume.ParseError = ex.Message; await errDb.SaveChangesAsync(); }
+        }
+    }
+
     public async Task<ResumeStatusResponse?> GetStatusAsync(Guid userId)
     {
         var resume = await db.Resumes

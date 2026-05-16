@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     debug: bool = False
     linkedin_email: str = ""
     linkedin_password: str = ""
+    github_token: str = ""
 
 
 settings = Settings()

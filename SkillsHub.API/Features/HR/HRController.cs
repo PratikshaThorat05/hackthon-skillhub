@@ -28,6 +28,14 @@ public class HRController(HRService hrService, ProfileService profileService, Re
         }));
     }
 
+    [HttpPatch("profiles/{id:guid}/skills")]
+    public async Task<ActionResult<ApiResponse<ProfileResponse>>> UpdateProfileSkills(Guid id, [FromBody] UpdateSkillsRequest req)
+    {
+        var profile = await profileService.UpdateSkillsByIdAsync(id, req.Skills);
+        if (profile is null) return NotFound(ApiResponse<ProfileResponse>.Fail("Profile not found"));
+        return Ok(ApiResponse<ProfileResponse>.Ok(profile, "Skills updated"));
+    }
+
     [HttpPatch("profiles/{id:guid}")]
     public async Task<ActionResult<ApiResponse<ProfileResponse>>> UpdateProfile(Guid id, [FromBody] UpdateProfileRequest req)
     {
@@ -83,6 +91,19 @@ public class HRController(HRService hrService, ProfileService profileService, Re
         var (success, error, response) = await resumeService.UploadLinkedInForEmployeeAsync(req.LinkedInUrl, req.EmployeeEmail.Trim().ToLower());
         if (!success) return BadRequest(ApiResponse<object>.Fail(error));
         return Ok(ApiResponse<object>.Ok(response!, $"LinkedIn profile import started for {req.EmployeeEmail}"));
+    }
+
+    [HttpPost("upload-github")]
+    public async Task<ActionResult<ApiResponse<object>>> UploadGitHub([FromBody] GitHubHRUploadRequest req)
+    {
+        if (string.IsNullOrWhiteSpace(req.EmployeeEmail))
+            return BadRequest(ApiResponse<object>.Fail("Employee email is required"));
+        if (string.IsNullOrWhiteSpace(req.GitHubUrl))
+            return BadRequest(ApiResponse<object>.Fail("GitHub URL is required"));
+
+        var (success, error, response) = await resumeService.UploadGitHubForEmployeeAsync(req.GitHubUrl, req.EmployeeEmail.Trim().ToLower());
+        if (!success) return BadRequest(ApiResponse<object>.Fail(error));
+        return Ok(ApiResponse<object>.Ok(response!, $"GitHub profile import started for {req.EmployeeEmail}"));
     }
 
     [HttpPost("upload")]
