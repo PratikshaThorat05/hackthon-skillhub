@@ -100,7 +100,7 @@ interface ChatTurn {
                     </a>
                   }
                 </div>
-                @if (turn.results[0]?.reasoning) {
+                @if (turn.results[0].reasoning) {
                   <div class="reasoning-block">
                     <span class="reasoning-label">AI Reasoning</span>
                     <p class="reasoning-text">{{ turn.results[0].reasoning }}</p>
