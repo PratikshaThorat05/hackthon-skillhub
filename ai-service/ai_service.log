@@ -1,0 +1,69 @@
+INFO:     Started server process [77916]
+INFO:     Waiting for application startup.
+2026-05-15 18:44:16,561 | INFO | main | Loading sentence-transformers model...
+2026-05-15 18:44:16,561 | INFO | app.services.embedding_service | Loading embedding model: all-MiniLM-L6-v2
+2026-05-15 18:44:16,561 | INFO | sentence_transformers.SentenceTransformer | Use pytorch device_name: cpu
+2026-05-15 18:44:16,561 | INFO | sentence_transformers.SentenceTransformer | Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2026-05-15 18:44:20,134 | INFO | app.services.embedding_service | Embedding model loaded
+2026-05-15 18:44:20,134 | INFO | main | AI service ready
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:54591 - "GET /health HTTP/1.1" 200 OK
+2026-05-15 18:49:01,031 | INFO | app.services.vector_index | Index rebuilt with 5 profiles
+2026-05-15 18:49:01,036 | INFO | app.routers.embed | Index rebuilt with 5 entries
+INFO:     127.0.0.1:57979 - "POST /rebuild-index HTTP/1.1" 200 OK
+2026-05-15 18:55:34,942 | INFO | app.routers.search | Semantic search: query='React developer', top_k=3
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|##########| 1/1 [00:00<00:00, 17.94it/s]
+INFO:     127.0.0.1:63283 - "POST /search HTTP/1.1" 200 OK
+2026-05-15 18:55:40,400 | INFO | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:63283 - "POST /explain-match HTTP/1.1" 200 OK
+2026-05-15 18:55:43,183 | INFO | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:63283 - "POST /explain-match HTTP/1.1" 200 OK
+2026-05-15 18:55:55,489 | INFO | app.routers.embed | Embedding profile_id=edd1a41e-1b9c-4fac-9859-3e50bc88f14d
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|##########| 1/1 [00:00<00:00, 30.38it/s]
+INFO:     127.0.0.1:52528 - "POST /embed-profile HTTP/1.1" 200 OK
+2026-05-15 18:55:55,754 | INFO | app.routers.embed | Embedding profile_id=c44a06fa-6acb-4653-ade0-d8d9a2cf43a7
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|##########| 1/1 [00:00<00:00, 25.97it/s]
+INFO:     127.0.0.1:52528 - "POST /embed-profile HTTP/1.1" 200 OK
+2026-05-15 18:55:56,006 | INFO | app.routers.embed | Embedding profile_id=9e44be27-6d87-4f65-b9a9-e29f1b212482
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|##########| 1/1 [00:00<00:00, 23.95it/s]
+INFO:     127.0.0.1:52528 - "POST /embed-profile HTTP/1.1" 200 OK
+2026-05-15 18:55:56,275 | INFO | app.routers.embed | Embedding profile_id=81d12611-b012-42a3-ab3a-5ef59560c66c
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|##########| 1/1 [00:00<00:00, 38.74it/s]
+INFO:     127.0.0.1:52528 - "POST /embed-profile HTTP/1.1" 200 OK
+2026-05-15 18:55:56,575 | INFO | app.routers.embed | Embedding profile_id=48c5bc16-ba2c-4d23-a6e6-bc06580c8ebc
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|##########| 1/1 [00:00<00:00, 31.88it/s]
+INFO:     127.0.0.1:52528 - "POST /embed-profile HTTP/1.1" 200 OK
+2026-05-15 18:55:56,857 | INFO | app.routers.embed | Embedding profile_id=278f6301-8afa-4c87-ba70-ab50fe7b88db
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|##########| 1/1 [00:00<00:00, 40.53it/s]
+INFO:     127.0.0.1:52528 - "POST /embed-profile HTTP/1.1" 200 OK
+2026-05-15 18:55:57,279 | INFO | app.routers.embed | Embedding profile_id=602ec383-5ed5-4420-b51d-c9a6ba30cb69
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|##########| 1/1 [00:00<00:00, 37.33it/s]
+INFO:     127.0.0.1:52528 - "POST /embed-profile HTTP/1.1" 200 OK
+2026-05-15 18:55:57,696 | INFO | app.routers.embed | Embedding profile_id=1834f553-69be-4df0-a64d-538dc50f46b7
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|##########| 1/1 [00:00<00:00, 33.63it/s]
+INFO:     127.0.0.1:52528 - "POST /embed-profile HTTP/1.1" 200 OK
+2026-05-15 18:55:58,109 | INFO | app.routers.embed | Embedding profile_id=ac0d99f5-4160-47eb-a883-29a7a57d4efb
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|##########| 1/1 [00:00<00:00, 31.54it/s]
+INFO:     127.0.0.1:52528 - "POST /embed-profile HTTP/1.1" 200 OK
+2026-05-15 18:55:58,531 | INFO | app.routers.embed | Embedding profile_id=16f04397-2895-4401-8d21-3531e8efafd1
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|##########| 1/1 [00:00<00:00, 41.84it/s]
+INFO:     127.0.0.1:52528 - "POST /embed-profile HTTP/1.1" 200 OK
+2026-05-15 18:56:10,183 | INFO | app.routers.search | Semantic search: query='AWS certified cloud architect', top_k=3
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|##########| 1/1 [00:00<00:00, 79.12it/s]
+INFO:     127.0.0.1:51139 - "POST /search HTTP/1.1" 200 OK
+2026-05-15 18:56:12,098 | INFO | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51139 - "POST /explain-match HTTP/1.1" 200 OK
+2026-05-15 18:56:15,013 | INFO | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51139 - "POST /explain-match HTTP/1.1" 200 OK
+2026-05-15 18:56:18,108 | INFO | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51139 - "POST /explain-match HTTP/1.1" 200 OK
+2026-05-15 18:56:27,279 | INFO | app.routers.search | Semantic search: query='AWS certified cloud architect', top_k=3
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|##########| 1/1 [00:00<00:00, 124.63it/s]
+INFO:     127.0.0.1:60796 - "POST /search HTTP/1.1" 200 OK
+2026-05-15 18:56:29,609 | INFO | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:60796 - "POST /explain-match HTTP/1.1" 200 OK
+2026-05-15 18:56:31,923 | INFO | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:60796 - "POST /explain-match HTTP/1.1" 200 OK
+2026-05-15 18:56:34,201 | INFO | httpx | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:60796 - "POST /explain-match HTTP/1.1" 200 OK

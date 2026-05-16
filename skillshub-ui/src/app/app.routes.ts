@@ -1,0 +1,43 @@
+import { Routes } from '@angular/router';
+import { authGuard, hrGuard, publicGuard } from './core/auth/auth.guard';
+
+export const routes: Routes = [
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  {
+    path: 'login',
+    canActivate: [publicGuard],
+    loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent)
+  },
+  {
+    path: 'register',
+    canActivate: [publicGuard],
+    loadComponent: () => import('./features/auth/register/register.component').then(m => m.RegisterComponent)
+  },
+  {
+    path: 'employee',
+    canActivate: [authGuard],
+    children: [
+      { path: 'upload', loadComponent: () => import('./features/employee/upload/upload.component').then(m => m.UploadComponent) },
+      { path: 'profile', loadComponent: () => import('./features/employee/profile/profile.component').then(m => m.ProfileComponent) },
+      { path: 'directory', loadComponent: () => import('./features/employee/directory/directory.component').then(m => m.DirectoryComponent) }
+    ]
+  },
+  {
+    path: 'hr',
+    canActivate: [hrGuard],
+    children: [
+      { path: 'search', loadComponent: () => import('./features/hr/search/search.component').then(m => m.HrSearchComponent) },
+      { path: 'profiles', loadComponent: () => import('./features/hr/review/profiles.component').then(m => m.ProfilesComponent) },
+      { path: 'upload', loadComponent: () => import('./features/hr/upload/hr-upload.component').then(m => m.HrUploadComponent) },
+      { path: 'bulk-upload', loadComponent: () => import('./features/hr/bulk-upload/bulk-upload.component').then(m => m.BulkUploadComponent) },
+      { path: 'dashboard', loadComponent: () => import('./features/hr/dashboard/dashboard.component').then(m => m.DashboardComponent) },
+      { path: 'org-chart', loadComponent: () => import('./features/hr/org-chart/org-chart.component').then(m => m.OrgChartComponent) },
+      { path: 'gap-analysis', loadComponent: () => import('./features/hr/gap-analysis/gap-analysis.component').then(m => m.GapAnalysisComponent) },
+      { path: 'team-builder', loadComponent: () => import('./features/hr/team-builder/team-builder.component').then(m => m.TeamBuilderComponent) },
+      { path: 'chat', loadComponent: () => import('./features/hr/chat/chat.component').then(m => m.ChatComponent) },
+      { path: 'profile/:id', loadComponent: () => import('./features/hr/profile-view/profile-view.component').then(m => m.ProfileViewComponent) },
+      { path: 'directory', loadComponent: () => import('./features/employee/directory/directory.component').then(m => m.DirectoryComponent) }
+    ]
+  },
+  { path: '**', redirectTo: 'login' }
+];

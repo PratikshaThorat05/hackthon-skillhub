@@ -1,0 +1,73 @@
+services:
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: skillshub-sql
+    environment:
+      SA_PASSWORD: "SkillsHub@2024!"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'SkillsHub@2024!' -Q 'SELECT 1' -No 2>/dev/null || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    container_name: skillshub-ai
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./ai-service/.env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 60s
+
+  api:
+    build:
+      context: ./SkillsHub.API
+      dockerfile: Dockerfile
+    container_name: skillshub-api
+    ports:
+      - "5000:80"
+    environment:
+      ConnectionStrings__Default: "Server=sqlserver,1433;Database=SkillsHub;User Id=sa;Password=SkillsHub@2024!;TrustServerCertificate=True"
+      JwtSettings__Secret: "SkillsHub-SuperSecret-JWT-Key-2024-MinLength32Chars!"
+      JwtSettings__Issuer: "SkillsHub.API"
+      JwtSettings__Audience: "SkillsHub.Client"
+      AIService__BaseUrl: "http://ai-service:8000"
+      Storage__UploadPath: "/uploads"
+      Cors__AllowedOrigin: "http://localhost:4200"
+      ASPNETCORE_ENVIRONMENT: "Production"
+    volumes:
+      - resume_uploads:/uploads
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      ai-service:
+        condition: service_started
+
+  frontend:
+    build:
+      context: ./skillshub-ui
+      dockerfile: Dockerfile
+    container_name: skillshub-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - api
+
+volumes:
+  sqlserver_data:
+  resume_uploads:
