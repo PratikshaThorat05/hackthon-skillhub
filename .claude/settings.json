@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(dotnet *)",
+      "PowerShell(ng *)",
+      "PowerShell(npm *)",
+      "PowerShell(docker *)",
+      "PowerShell(docker-compose *)",
+      "PowerShell(pip *)",
+      "PowerShell(uvicorn *)",
+      "PowerShell(Test-Path *)",
+      "PowerShell(Get-Command *)",
+      "PowerShell(Get-ChildItem *)",
+      "Bash(dotnet *)",
+      "Bash(ng *)",
+      "Bash(npm *)",
+      "Bash(docker *)",
+      "Bash(docker compose *)",
+      "Bash(pip *)",
+      "Bash(uvicorn *)"
+    ]
+  }
+}
